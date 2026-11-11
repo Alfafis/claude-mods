@@ -10,7 +10,7 @@ Marketplace pessoal de mods para o Claude Code. Cada recurso é um plugin indepe
 |---|---|---|---|
 | `filetree` | 0.7.3 | Painel de árvore de arquivos: pastas sob demanda, busca, prévia paginada (diff ou conteúdo) ao clicar, nomes coloridos pelo estado no git, arquivos que o Claude lê e escreve, alerta de arquivo sensível, aviso de edição em `main` ou sobre mudança sua não commitada e, opcional, PR/CI/review do GitHub via `gh` | Próprio |
 | `crew` | 0.4.0 | Painel de subagents (`/crew`): um card por agent com caranguejo animado, papel, ferramenta atual, resposta, contexto, tempo e custo estimado (`~$`) | Próprio; arte do crab-band (MIT), ver aviso abaixo |
-| `meter` | 0.1.4 | Contexto e custo da conversa principal: painel `/meter` com a janela por categoria, o que cada turno acrescentou, custo por turno e limites; aviso único quando o contexto passa de `warnAt` | Próprio |
+| `meter` | 0.1.5 | Contexto e custo da conversa principal: painel `/meter` com a janela por categoria, o que cada turno acrescentou, custo por turno e limites; aviso único quando o contexto passa de `warnAt` | Próprio |
 | `recall` | 0.1.0 | Busca no texto das sessões passadas (`/recall <palavras>`): este projeto ou todos, com o id para `claude --resume` | Próprio |
 
 ## Como é
@@ -84,7 +84,7 @@ Depois de instalar ou mudar o código, `/reload-plugins`. Opções (`/plugin con
 ## O que cada um não faz
 
 - `crew`: o custo é estimativa a partir da tabela `prices` e do `usage` de cada step, não a fatura. Escrita de cache com TTL de 1 h custa o dobro e o `usage` não separa o TTL; faixas de preço por tamanho de prompt não são modeladas.
-- `meter`: o percentual e a janela são os da compactação (o que dispara o autocompact), que pode ser menor que a janela do modelo; nesse caso o painel avisa. Cost e limites vêm do engine. Limites só existem em assinatura. A compactação não aparece como queda por categoria.
+- `meter`: o percentual e a janela são os da compactação (o que dispara o autocompact), que pode ser menor que a janela do modelo; nesse caso o painel avisa. Cost e limites vêm do engine. Limites só existem em assinatura. Uma compactação aparece como marcador `compacted` acima das categorias, não como queda por categoria.
 - `recall`: só lê o histórico local, em macOS e Linux. Usa o ripgrep embutido no binário do Claude Code (`ARGV0=rg`, detalhe interno que pode mudar) e `rg` do PATH como reserva. Credenciais são mascaradas por heurística; o escopo `all` mostra texto de outros projetos.
 - `filetree`: git sempre com `--no-optional-locks` e sem fsmonitor, para não travar o commit do Claude nem executar código de config de repo clonado.
 

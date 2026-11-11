@@ -1,7 +1,7 @@
 import { expect, mock, test } from 'claude-code/testing'
 import type { On } from 'claude-code'
 
-import { base, crossing, fmtTok, fmtUsd, gauge, growth, label, resetsIn, snapshot, spark, tone, windowName } from '../lib/format'
+import { base, compacted, crossing, fmtTok, fmtUsd, gauge, growth, label, resetsIn, snapshot, spark, tone, windowName } from '../lib/format'
 import { toReading } from '../hooks/register'
 
 const PANE = {
@@ -123,6 +123,16 @@ test('the warning fires once per climb and arms again ten points below the line'
   expect(crossing(true, 69, 80)).toEqual({ warn: false, warned: false })
   expect(crossing(false, undefined, 80)).toEqual({ warn: false, warned: false })
   expect(crossing(false, Number.NaN, 80)).toEqual({ warn: false, warned: false })
+})
+
+test('compacted tells a shrunken window from a normal turn, and says nothing without a snapshot', () => {
+  const cat = (name: string, tokens: number) => ({ name, tokens, kind: 'used' as const })
+  const before = snapshot([cat('Messages', 60_000), cat('System prompt', 9000)])
+  expect(compacted(before, [cat('Messages', 8000), cat('System prompt', 9000)])).toBe(true)
+  expect(compacted(before, [cat('Messages', 61_000), cat('System prompt', 9000)])).toBe(false)
+  expect(compacted(before, [cat('Messages', 56_000), cat('System prompt', 9000)])).toBe(false)
+  expect(compacted(before, [cat('Messages', 30_000), cat('System prompt', 9000)])).toBe(true)
+  expect(compacted({}, [cat('Messages', 1000)])).toBe(false)
 })
 
 test('growth tells what each category gained since the last snapshot', () => {
@@ -443,4 +453,32 @@ test('autoOpen off leaves the pane to the command', { options: { autoOpen: false
   expect(box.opened).toEqual([])
   await $.command.run({ command: 'meter', args: '' })
   expect(box.opened).toEqual(['meter'])
+})
+
+test('a turn that leaves a much smaller window marks the pane as compacted, on every surface, and the next normal turn clears it', async ($, on) => {
+  const box = fresh()
+  world(on, box)
+  await $.session.start({ cwd: '/p', surface: 'terminal', isInteractive: true })
+  await $.command.run({ command: 'meter', args: '' })
+  const shrunk = (messages: number) => ({
+    ...usage().context,
+    breakdown: { ...usage().context.breakdown, categories: CATS.map(c => (c.name === 'Messages' ? { ...c, tokens: messages } : c)) },
+  })
+  box.usage = usage({ context: shrunk(60_000) })
+  await $.turn.start({ text: 'a', turnId: 't1' })
+  await $.turn.complete({ turnId: 't1', answer: '', durationMs: 5, isAborted: false, reason: 'answer' })
+  box.usage = usage({ context: shrunk(6000) })
+  await $.turn.start({ text: 'b', turnId: 't2' })
+  await $.turn.complete({ turnId: 't2', answer: '', durationMs: 5, isAborted: false, reason: 'answer' })
+  for (const surface of ['terminal', 'desktop', 'vscode', 'mobile'] as const) {
+    const ui = await $.ui.mount({ ...PANE, surface })
+    expect(await ui.find({ type: 'Text', text: /compacted/ })).toBeDefined()
+    await ui.unmount()
+  }
+  box.usage = usage({ context: shrunk(9000) })
+  await $.turn.start({ text: 'c', turnId: 't3' })
+  await $.turn.complete({ turnId: 't3', answer: '', durationMs: 5, isAborted: false, reason: 'answer' })
+  const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  expect(await ui.find({ type: 'Text', text: /compacted/ })).toBeUndefined()
+  await ui.unmount()
 })
