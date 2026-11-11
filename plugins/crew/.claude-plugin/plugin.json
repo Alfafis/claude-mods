@@ -1,0 +1,52 @@
+{
+  "name": "crew",
+  "version": "0.3.1",
+  "description": "Subagent panel for Claude Code: one card per agent with a pixel-art mascot, model, effort, context and time",
+  "types": "./types/index.d.ts",
+  "author": {
+    "name": "Alfafis"
+  },
+  "license": "MIT",
+  "userConfig": {
+    "autoOpen": {
+      "type": "boolean",
+      "title": "Open on first subagent",
+      "description": "Open the Crew pane the first time a subagent starts in a session. /crew opens and closes it by hand either way.",
+      "default": true
+    },
+    "contextWindow": {
+      "type": "number",
+      "title": "Context window (tokens)",
+      "description": "Size the ctx percentage is measured against. The engine does not say a subagent's window, so this is an assumption.",
+      "default": 200000,
+      "min": 8000,
+      "max": 2000000
+    },
+    "maxCards": {
+      "type": "number",
+      "title": "Most cards kept",
+      "description": "How many cards the pane keeps. Past it the oldest finished ones go; a running one never does, so it is a soft limit.",
+      "default": 30,
+      "min": 5,
+      "max": 200
+    },
+    "compactFinished": {
+      "type": "boolean",
+      "title": "Compact finished cards",
+      "description": "Show a finished agent in two lines with no mascot, so a long list stays readable. Running agents keep the full card.",
+      "default": false
+    },
+    "groupByParent": {
+      "type": "boolean",
+      "title": "Group by parent agent",
+      "description": "Show an agent under the agent that spawned it, indented. Only matters when subagents start subagents.",
+      "default": true
+    },
+    "prices": {
+      "type": "string",
+      "title": "Model prices (JSON)",
+      "description": "USD per million tokens, by model name, to show an estimated cost, for example {\"sonnet-5-5\": {\"in\": 3, \"out\": 15, \"cacheR\": 0.3, \"cacheW\": 3.75}}. A cache read price left out is taken as the input price, a cache write price as 1.25 times it. No prices are built in: a model not listed shows no cost.",
+      "default": ""
+    }
+  }
+}

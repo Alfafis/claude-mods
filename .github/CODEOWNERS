@@ -1,0 +1,5 @@
+* @Alfafis
+/.github/ @Alfafis
+/.claude-plugin/ @Alfafis
+/plugins/*/hooks/ @Alfafis
+/plugins/*/.claude-plugin/ @Alfafis

@@ -1,0 +1,38 @@
+{
+  "name": "filetree",
+  "version": "0.7.3",
+  "description": "File tree pane for Claude Code: lazy folders, git status and the files Claude reads and writes",
+  "types": "./types/index.d.ts",
+  "author": {
+    "name": "Alfafis"
+  },
+  "license": "MIT",
+  "userConfig": {
+    "icons": {
+      "type": "string",
+      "title": "File icons",
+      "description": "nerd: folder and file glyphs, needs a Nerd Font in the terminal. dot: a coloured square per file type, works in any font. none: names only.",
+      "default": "nerd"
+    },
+    "github": {
+      "type": "boolean",
+      "title": "GitHub pull request",
+      "description": "Show the current branch's pull request, CI checks and review state. Runs the gh CLI and uses the network, with whichever gh account is active.",
+      "default": false
+    },
+    "githubRefreshSeconds": {
+      "type": "number",
+      "title": "GitHub refresh (seconds)",
+      "description": "How long a settled pull request is cached before gh is asked again (60 to 3600).",
+      "default": 300,
+      "min": 60,
+      "max": 3600
+    },
+    "autoOpen": {
+      "type": "boolean",
+      "title": "Open the pane when a session starts",
+      "description": "Open the Files pane by itself at the start of every session. Off: it opens only when you run /filetree. The tree keeps following the session either way.",
+      "default": true
+    }
+  }
+}

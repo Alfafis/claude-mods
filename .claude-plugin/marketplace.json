@@ -1,0 +1,31 @@
+{
+  "name": "alfafis-mods",
+  "owner": {
+    "name": "Alfafis"
+  },
+  "metadata": {
+    "description": "Mods pessoais para o Claude Code"
+  },
+  "plugins": [
+    {
+      "name": "filetree",
+      "description": "Painel de árvore de arquivos: pastas sob demanda, git status e arquivos lidos/escritos pelo Claude",
+      "source": "./plugins/filetree"
+    },
+    {
+      "name": "crew",
+      "description": "Painel de subagents: um card por agent com mascote pixel-art, modelo, effort, contexto e tempo",
+      "source": "./plugins/crew"
+    },
+    {
+      "name": "meter",
+      "description": "Contexto e custo da sessão principal: linha acima do prompt e painel /meter com a janela por categoria e o que cada turno acrescentou",
+      "source": "./plugins/meter"
+    },
+    {
+      "name": "recall",
+      "description": "Busca no texto das sessões passadas: painel /recall, este projeto ou todos, com o id para retomar",
+      "source": "./plugins/recall"
+    }
+  ]
+}

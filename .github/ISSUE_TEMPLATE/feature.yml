@@ -1,0 +1,17 @@
+name: Ideia ou recurso
+description: Proponha uma mudança ou um novo mod
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema que isso resolve
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposta
+      description: Se precisar de rede, processo externo ou acesso fora do projeto, diga aqui.
+    validations:
+      required: true

@@ -1,0 +1,18 @@
+{
+  "name": "recall",
+  "version": "0.1.0",
+  "description": "Search the text of past sessions from a pane: /recall <words>, this project or all, with the session id to resume",
+  "types": "./types/index.d.ts",
+  "author": {
+    "name": "Alfafis"
+  },
+  "license": "MIT",
+  "userConfig": {
+    "scope": {
+      "type": "string",
+      "title": "Where to search",
+      "description": "project: only the sessions of the folder Claude was opened in. all: every project under the Claude config folder (slower, and shows other projects' text).",
+      "default": "project"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+name: Bug
+description: Algo não funciona como esperado
+labels: [bug]
+body:
+  - type: dropdown
+    id: plugin
+    attributes:
+      label: Plugin
+      options: [filetree, crew, meter, recall, marketplace]
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versão do plugin e do Claude Code
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Passos para reproduzir e o que esperava
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: Não cole credenciais nem texto de sessões. Vulnerabilidades vão pelo Private Vulnerability Reporting (SECURITY.md).

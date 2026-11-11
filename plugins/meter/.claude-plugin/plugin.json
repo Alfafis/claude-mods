@@ -1,0 +1,38 @@
+{
+  "name": "meter",
+  "version": "0.1.4",
+  "description": "Context and cost of the main session: a line above the prompt, and a /meter pane with the window by category and what each turn added",
+  "types": "./types/index.d.ts",
+  "author": {
+    "name": "Alfafis"
+  },
+  "license": "MIT",
+  "userConfig": {
+    "band": {
+      "type": "boolean",
+      "title": "Line above the prompt",
+      "description": "Show context, the last turn's cost, the session's cost and the rate-limit windows in one line above the prompt. Off by default: the /meter pane and the context warning work either way.",
+      "default": false
+    },
+    "limits": {
+      "type": "boolean",
+      "title": "Rate-limit windows in the line",
+      "description": "Add the 5 hour and 7 day windows the last response reported, when the account has them.",
+      "default": true
+    },
+    "warnAt": {
+      "type": "number",
+      "title": "Warn at context %",
+      "description": "Raise a toast, once, when the context window passes this share, so a compact or a clear can come before autocompact starts to thrash. It arms again after the share falls 10 points below.",
+      "default": 80,
+      "min": 50,
+      "max": 95
+    },
+    "autoOpen": {
+      "type": "boolean",
+      "title": "Open the pane when a session starts",
+      "description": "Open the Context pane by itself at the start of every session, so the window and the cost are always beside the chat. Off: it opens only when you run /meter.",
+      "default": true
+    }
+  }
+}
