@@ -1,19 +1,19 @@
-# Segurança
+# Security
 
-Os mods deste repositório rodam código local em hooks de `tool.call` e leem estado do Claude Code (arquivos do projeto, histórico de sessões em `~/.claude/projects`). Um bug aqui pode expor dados ou executar código na máquina de quem instala.
+The mods in this repository run local code in `tool.call` hooks and read Claude Code state (project files, session history in `~/.claude/projects`). A bug here can expose data or run code on the machine of whoever installs it.
 
-## Reportar uma vulnerabilidade
+## Reporting a vulnerability
 
-Não abra issue pública. Use o **Private Vulnerability Reporting** do GitHub: aba *Security* → *Report a vulnerability*.
+Do not open a public issue. Use GitHub **Private Vulnerability Reporting**: *Security* tab, then *Report a vulnerability*.
 
-Inclua o plugin, a versão, os passos para reproduzir e o impacto. Resposta inicial em até 7 dias; correção ou plano em até 30.
+Include the plugin, the version, the steps to reproduce and the impact. First reply within 7 days; a fix or a plan within 30.
 
-## Escopo
+## Scope
 
-Vale: execução de código ou comando inesperado, leitura ou escrita fora do esperado, vazamento de credenciais, bypass das proteções documentadas (mascaramento no `recall`, git sem fsmonitor no `filetree`).
+In scope: unexpected code or command execution, reads or writes outside what is expected, credential leaks, bypass of the documented protections (masking in `recall`, git without fsmonitor in `filetree`).
 
-Fora do escopo: comportamento da engine de mods do Claude Code em si (reporte à Anthropic) e plugins de terceiros.
+Out of scope: the Claude Code mod engine itself (report it to Anthropic) and third-party plugins.
 
-## Versões suportadas
+## Supported versions
 
-Apenas a última versão de cada plugin no branch `main`.
+Only the latest release of each plugin, the commit pinned in `marketplace.json` on `main`.

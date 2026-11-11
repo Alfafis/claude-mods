@@ -4,28 +4,52 @@
     "name": "Alfafis"
   },
   "metadata": {
-    "description": "Mods pessoais para o Claude Code"
+    "description": "Mods for Claude Code: file tree, subagent crew, context meter and session recall"
   },
   "plugins": [
     {
       "name": "filetree",
       "description": "Painel de árvore de arquivos: pastas sob demanda, git status e arquivos lidos/escritos pelo Claude",
-      "source": "./plugins/filetree"
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/Alfafis/claude-mods.git",
+        "path": "plugins/filetree",
+        "ref": "main",
+        "sha": "fed047eac8938171c17bdea7b246ee6e8d7d0591"
+      }
     },
     {
       "name": "crew",
       "description": "Painel de subagents: um card por agent com mascote pixel-art, modelo, effort, contexto e tempo",
-      "source": "./plugins/crew"
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/Alfafis/claude-mods.git",
+        "path": "plugins/crew",
+        "ref": "main",
+        "sha": "fed047eac8938171c17bdea7b246ee6e8d7d0591"
+      }
     },
     {
       "name": "meter",
       "description": "Contexto e custo da sessão principal: linha acima do prompt e painel /meter com a janela por categoria e o que cada turno acrescentou",
-      "source": "./plugins/meter"
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/Alfafis/claude-mods.git",
+        "path": "plugins/meter",
+        "ref": "main",
+        "sha": "fed047eac8938171c17bdea7b246ee6e8d7d0591"
+      }
     },
     {
       "name": "recall",
       "description": "Busca no texto das sessões passadas: painel /recall, este projeto ou todos, com o id para retomar",
-      "source": "./plugins/recall"
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/Alfafis/claude-mods.git",
+        "path": "plugins/recall",
+        "ref": "main",
+        "sha": "fed047eac8938171c17bdea7b246ee6e8d7d0591"
+      }
     }
   ]
 }

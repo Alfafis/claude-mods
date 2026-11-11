@@ -1,47 +1,27 @@
 # claude-mods
 
-Marketplace pessoal de mods para o Claude Code. Cada recurso é um plugin independente em `plugins/`, para que uma falha em um não derrube os outros. Código aberto, contribuições bem-vindas: veja [CONTRIBUTING.md](CONTRIBUTING.md).
+**English** · [Português](README.pt-BR.md)
+
+A marketplace of mods for Claude Code. Each feature is an independent plugin under `plugins/`, so a failure in one does not take down the others. Open source, contributions welcome: see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Plugins
 
-| Plugin | Versão | O que faz | Origem |
-|---|---|---|---|
-| `filetree` | 0.7.3 | Painel de árvore de arquivos: pastas sob demanda, busca, prévia paginada (diff ou conteúdo) ao clicar, nomes coloridos pelo estado no git, arquivos que o Claude lê e escreve, alerta de arquivo sensível, aviso de edição em `main` ou sobre mudança sua não commitada e, opcional, PR/CI/review do GitHub via `gh` | Próprio |
-| `crew` | 0.4.0 | Painel de subagents (`/crew`): um card por agent com caranguejo animado, papel, ferramenta atual, resposta, contexto, tempo e custo estimado (`~$`) | Próprio; arte do crab-band (MIT), ver aviso abaixo |
-| `meter` | 0.1.4 | Contexto e custo da conversa principal: painel `/meter` com a janela por categoria, o que cada turno acrescentou, custo por turno e limites; aviso único quando o contexto passa de `warnAt` | Próprio |
-| `recall` | 0.1.0 | Busca no texto das sessões passadas (`/recall <palavras>`): este projeto ou todos, com o id para `claude --resume` | Próprio |
+| Plugin | Version | What it does |
+|---|---|---|
+| `filetree` | 0.7.3 | File tree panel: folders on demand, search, paged preview (diff or content) on click, names colored by git state, files Claude reads and writes, sensitive-file alert, warning when editing on `main` or over your uncommitted changes, and optional GitHub PR/CI/review through `gh` |
+| `crew` | 0.4.0 | Subagent panel (`/crew`): one card per agent with an animated crab, role, current tool, answer, context, time and estimated cost (`~$`) |
+| `meter` | 0.1.4 | Main conversation context and cost: `/meter` panel with the window by category, what each turn added, cost per turn and limits; a one-time warning when context passes `warnAt` |
+| `recall` | 0.1.0 | Search the text of past sessions (`/recall <words>`): this project or all, with the id for `claude --resume` |
 
-## Como é
+Panels open as tabs beside the chat (`/filetree`, `/crew`, `/meter`, `/recall`). After `/reload-plugins` the tabs close and are reopened by their command.
 
-Os painéis abrem como abas ao lado do chat (`/filetree`, `/crew`, `/meter`, `/recall`). Depois de um `/reload-plugins` as abas fecham e precisam ser reabertas pelo comando.
+<img src="docs/img/filetree.png" alt="Files panel: git branch with a warning when Claude edited something, file preview and a tree with icons and git-state colors" width="300"> <img src="docs/img/meter.png" alt="Context panel: context percentage, window by category, memory files, session cost and limits" width="300">
 
-### filetree
+<img src="docs/img/crew.png" alt="Crew panel: one card per subagent with an animated crab, context meter, output, estimated cost, steps, model and time" width="300"> <img src="docs/img/recall.png" alt="Recall panel: search box and a project / all projects scope" width="300">
 
-<img src="docs/img/filetree.png" alt="Painel Files: raiz em maiúsculo, busca, branch com aviso de edição pelo Claude, prévia de arquivo e árvore com ícones e cores pelo estado no git" width="300">
+## Install
 
-A árvore do projeto com pastas sob demanda e busca. A linha da branch (`main`) avisa quando o Claude editou algo (`⚠ Claude edited here`). Clicar num arquivo abre a prévia no topo: diff contra o HEAD se há mudança, senão o início do conteúdo (aqui, um binário só avisa). Nomes em laranja foram tocados pelo Claude, em cinza são ignorados pelo git, e amarelo, verde e vermelho seguem o estado no git.
-
-### crew
-
-<img src="docs/img/crew.png" alt="Painel crew: um card por subagent, com caranguejo animado, ferramenta ou resposta, medidor de contexto, saída, custo estimado, passos, modelo e tempo" width="300">
-
-Um card por subagent. O caranguejo muda de fantasia conforme o tipo do agent (Haiku, Sonnet, Opus, Explore…) e dança enquanto ele roda. A linha com `→` é a primeira linha da resposta; `ctx` é o medidor de contexto; `~$` é o custo estimado pela sua tabela `prices`; o total da sessão fica no topo (`8 agents · out 26.6k · ~$1.05`).
-
-### meter
-
-<img src="docs/img/meter.png" alt="Painel Context: contexto em percentual, janela por categoria com o crescimento do último turno, arquivos de memória, custo da sessão e limites de 5 horas e 7 dias" width="300">
-
-A aba `Context`: quanto da janela está usada, a janela por categoria (com `+N` do que cada uma cresceu no último turno), os maiores arquivos de memória, o custo da sessão e por turno, e os limites de 5 h e 7 d com o tempo para resetar. O botão `↻ refresh` relê o engine.
-
-### recall
-
-<img src="docs/img/recall.png" alt="Painel Recall: caixa de busca, escolha entre este projeto e todos os projetos, e a dica de que o texto é local e credenciais ficam escondidas" width="300">
-
-Caixa de busca no histórico das sessões passadas; `this project` ou `all projects` troca o escopo. Cada resultado traz data, projeto, o `claude --resume <id>` e até 3 trechos. O print acima é o estado inicial, antes de uma busca.
-
-## Instalar
-
-Registre o marketplace uma vez e instale só os mods que quiser, um `install` por mod:
+**Terminal.** Register the marketplace once, then install only the mods you want:
 
 ```
 claude plugin marketplace add Alfafis/claude-mods
@@ -51,46 +31,52 @@ claude plugin install recall@alfafis-mods
 claude plugin install crew@alfafis-mods
 ```
 
-Para atualizar: `claude plugin marketplace update alfafis-mods`. Para desenvolver a partir de uma cópia local, use o caminho no lugar do repo: `claude plugin marketplace add /caminho/para/claude-mods`.
+**Claude desktop app, Code tab.** `/plugin` does not run there. Click **+** next to the prompt box, then *Plugins*, *Add marketplace* with `Alfafis/claude-mods`, then *Add plugin*. The app's Chat tab does not load mods.
 
-**Segurança:** cada mod roda código na sua máquina, em hooks de toda chamada de ferramenta. Leia o código antes de instalar e fixe a versão se quiser evitar mudanças. Vulnerabilidades: veja [SECURITY.md](SECURITY.md).
+Every plugin is pinned to a commit in `marketplace.json`: a merge into `main` does not reach you until the maintainer publishes a release. To update: `claude plugin marketplace update alfafis-mods`. To develop from a local copy, use the path instead of the repo: `claude plugin marketplace add /path/to/claude-mods`.
 
-Depois de instalar ou mudar o código, `/reload-plugins`. Opções (`/plugin configure <plugin>@alfafis-mods`) só valem depois de reiniciar o Claude Code.
+**Security:** each mod runs code on your machine, in hooks on every tool call. Read the code before installing. Vulnerabilities: see [SECURITY.md](SECURITY.md).
 
-## Opções
+After installing or changing code, run `/reload-plugins`. Options (`/plugin configure <plugin>@alfafis-mods`) only apply after restarting Claude Code.
 
-| Plugin | Opção | Padrão | Efeito |
+## Surfaces
+
+The mods draw on the terminal and on the desktop app's Code tab; tests also run them on the `vscode` and `mobile` surfaces. The tests check the hooks and the tree each surface accepts, not how the desktop app paints it. On the desktop app `crew` draws the crab as an `Svg` and redraws the panel twice a second while an agent runs.
+
+## Options
+
+| Plugin | Option | Default | Effect |
 |---|---|---|---|
-| `filetree` | `autoOpen` | ligado | abre o painel no início de toda sessão; desligado, só com `/filetree` |
-| `filetree` | `icons` | `nerd` | `nerd` (exige Nerd Font), `dot` ou `none` |
-| `filetree` | `github` | desligado | consulta PR, checks e review da branch via `gh` |
-| `filetree` | `githubRefreshSeconds` | 300 | intervalo mínimo entre consultas |
-| `crew` | `autoOpen` | ligado | abre o painel no primeiro subagent |
-| `crew` | `maxCards` | 30 | limite suave de cards, nunca descarta agent rodando |
-| `crew` | `compactFinished` | desligado | concluído em 2 linhas, sem caranguejo |
-| `crew` | `groupByParent` | ligado | agent aninhado sob quem o criou |
-| `crew` | `contextWindow` | 200000 | tamanho da janela, em tokens, usado no medidor de contexto de cada card (8000 a 2000000) |
-| `crew` | `prices` | vazio | JSON de preços por modelo (USD por milhão de tokens); sem ele não há `~$` |
-| `meter` | `autoOpen` | ligado | abre o painel `Context` no início de toda sessão; desligado, só com `/meter` |
-| `meter` | `band` | desligado | linha de contexto e custo acima do prompt |
-| `meter` | `limits` | ligado | janelas de 5 h e 7 d na linha e no painel |
-| `meter` | `warnAt` | 80 | % de contexto que dispara o aviso (50 a 95) |
-| `recall` | `scope` | `project` | `project` ou `all` (todas as pastas de `~/.claude/projects`) |
+| `filetree` | `autoOpen` | on | opens the panel at the start of every session; off, only with `/filetree` |
+| `filetree` | `icons` | `nerd` | `nerd` (needs a Nerd Font), `dot` or `none` |
+| `filetree` | `github` | off | queries the branch's PR, checks and review through `gh` |
+| `filetree` | `githubRefreshSeconds` | 300 | minimum interval between queries |
+| `crew` | `autoOpen` | on | opens the panel on the first subagent |
+| `crew` | `maxCards` | 30 | soft card limit, never drops a running agent |
+| `crew` | `compactFinished` | off | finished agents in 2 lines, no crab |
+| `crew` | `groupByParent` | on | nested agents under the one that created them |
+| `crew` | `contextWindow` | 200000 | window size in tokens for each card's context meter (8000 to 2000000) |
+| `crew` | `prices` | empty | JSON of prices per model (USD per million tokens); without it there is no `~$` |
+| `meter` | `autoOpen` | on | opens the `Context` panel at the start of every session; off, only with `/meter` |
+| `meter` | `band` | off | context and cost line above the prompt |
+| `meter` | `limits` | on | 5 h and 7 d windows in the line and the panel |
+| `meter` | `warnAt` | 80 | context % that triggers the warning (50 to 95) |
+| `recall` | `scope` | `project` | `project` or `all` (every folder in `~/.claude/projects`) |
 
-## O que cada um não faz
+## What each one does not do
 
-- `crew`: o custo é estimativa a partir da tabela `prices` e do `usage` de cada step, não a fatura. Escrita de cache com TTL de 1 h custa o dobro e o `usage` não separa o TTL; faixas de preço por tamanho de prompt não são modeladas.
-- `meter`: o percentual e a janela são os da compactação (o que dispara o autocompact), que pode ser menor que a janela do modelo; nesse caso o painel avisa. Cost e limites vêm do engine. Limites só existem em assinatura. A compactação não aparece como queda por categoria.
-- `recall`: só lê o histórico local, em macOS e Linux. Usa o ripgrep embutido no binário do Claude Code (`ARGV0=rg`, detalhe interno que pode mudar) e `rg` do PATH como reserva. Credenciais são mascaradas por heurística; o escopo `all` mostra texto de outros projetos.
-- `filetree`: git sempre com `--no-optional-locks` e sem fsmonitor, para não travar o commit do Claude nem executar código de config de repo clonado.
+- `crew`: cost is an estimate from the `prices` table and each step's `usage`, not the invoice. Cache writes with a 1 h TTL cost double and `usage` does not separate the TTL; price tiers by prompt size are not modeled.
+- `meter`: percentage and window are the compaction ones (what triggers autocompact), which can be smaller than the model window; the panel says so. Cost and limits come from the engine. Limits exist only on a subscription. Compaction does not show as a drop per category.
+- `recall`: reads local history only, on macOS and Linux. It uses the ripgrep bundled in the Claude Code binary (`ARGV0=rg`, an internal detail that may change) and `rg` from `PATH` as a fallback. Credentials are masked heuristically; the `all` scope shows text from other projects.
+- `filetree`: git always runs with `--no-optional-locks` and without fsmonitor, so it neither blocks Claude's commit nor runs code from a cloned repo's config.
 
-## Aviso sobre o `crew`
+## Notice about `crew`
 
-O caranguejo vem do [crab-band](https://github.com/MaxHarfen/crab-band) (MIT), que declara ser desenhado a partir do Clawd, mascote do Claude Code da Anthropic, sem apoio da Anthropic. A MIT cobre a obra dos autores, não o personagem: direitos sobre o Clawd continuam com a Anthropic, e este projeto não é afiliado nem apoiado por ela. Se o titular pedir, a arte é removida ou trocada. Detalhes em `plugins/crew/NOTICE.md`.
+The crab comes from [crab-band](https://github.com/MaxHarfen/crab-band) (MIT), which states it is drawn after Clawd, Claude Code's mascot by Anthropic, and is not supported by Anthropic. The MIT covers the authors' work, not the character: rights in Clawd stay with Anthropic, and this project is not affiliated with or endorsed by it. If the rights holder asks, the art is removed or replaced. Details in `plugins/crew/NOTICE.md`.
 
-## Convenções
+## Conventions
 
-- Um plugin por recurso, com `.claude-plugin/plugin.json` próprio.
-- Estado da engine é do plugin dono: o nome do plugin entra nas chaves de `$.state`.
-- Código vindo de terceiros mantém licença e crédito originais dentro da pasta do plugin.
-- Teste e validação: `claude plugin validate plugins/<nome>` e `claude plugin test plugins/<nome>` (o `bun test` direto não roda: falta o módulo da engine).
+- One plugin per feature, each with its own `.claude-plugin/plugin.json`.
+- Engine state belongs to the owning plugin: the plugin name is part of the `$.state` keys.
+- Third-party code keeps its original license and credit inside the plugin's folder.
+- Test and validate: `claude plugin validate plugins/<name>` and `claude plugin test plugins/<name>` (plain `bun test` does not run: the engine module is missing).

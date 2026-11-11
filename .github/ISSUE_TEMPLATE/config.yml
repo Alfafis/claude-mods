@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Vulnerabilidade
+  - name: Vulnerability
     url: https://github.com/Alfafis/claude-mods/security/advisories/new
-    about: Reporte em privado, nunca em issue pública.
+    about: Report privately, never in a public issue.
