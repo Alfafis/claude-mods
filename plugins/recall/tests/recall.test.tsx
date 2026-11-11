@@ -106,9 +106,9 @@ test('a moment is printed as a local date and time', () => {
   expect(when(Date.parse('2026-11-11T12:00:00Z'))).toMatch(/^2026-11-1[01] \d\d:\d\d$/)
 })
 
-async function ask($: Parameters<Parameters<typeof test>[1]>[0], text: string) {
+async function ask($: Parameters<Parameters<typeof test>[1]>[0], text: string, surface: 'terminal' | 'desktop' | 'vscode' | 'mobile' = 'terminal') {
   await $.session.start({ cwd: CWD, surface: 'terminal', isInteractive: true })
-  const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  const ui = await $.ui.mount({ ...PANE, surface })
   await ui.input({ key: 'q', text, kind: 'submit' })
   return ui
 }
@@ -185,3 +185,15 @@ test('cut output is said, and the command opens the pane and searches what follo
   expect(await ui.find({ type: 'Text', text: /Output was cut/ })).toBeDefined()
   await ui.unmount()
 })
+
+for (const surface of ['terminal', 'desktop', 'vscode', 'mobile'] as const) {
+  test(`the pane searches and lists a hit on ${surface}`, async ($, on) => {
+    const box = fresh()
+    box.stdout = line(`${DIR}/old.jsonl`, 'the old plan for the pane')
+    box.mtimes = { [`${DIR}/old.jsonl`]: Date.parse('2026-11-01T10:00:00Z') }
+    world(on, box)
+    const ui = await ask($, 'plan', surface)
+    expect(await ui.find({ type: 'Text', text: /old plan/ })).toBeDefined()
+    await ui.unmount()
+  })
+}

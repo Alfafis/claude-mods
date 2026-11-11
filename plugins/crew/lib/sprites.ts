@@ -85,10 +85,42 @@ export function pack(grid: Grid): Sprite {
 
 // One frame of an agent's crab. While it runs the crab dances its outfit's routine, `ms` into it;
 // once over it stands still, tinted by how it ended.
-export function sprite(type: string, mood: Mood, ms: number): Sprite {
+function gridOf(type: string, mood: Mood, ms: number): Grid {
   const costume = costumeFor(type)
   const pose = mood === 'run' ? poseAt(costume, ms) : {}
   const grid = shrink(frame(costume, pose, X0, Y0, W, H), W, H, K)
   if (mood !== 'run') grid.px = grid.px.map(c => (c === undefined ? undefined : tint(c, mood)))
-  return pack(grid)
+  return grid
+}
+
+export function sprite(type: string, mood: Mood, ms: number): Sprite {
+  return pack(gridOf(type, mood, ms))
+}
+
+// Pixels per grid pixel in the vector form: the surfaces that draw Svg have no cell to size it by.
+export const SVG_SCALE = 3
+
+export const SVG_WIDTH = Math.floor(W / K) * SVG_SCALE
+export const SVG_HEIGHT = Math.floor(H / K) * SVG_SCALE
+
+// The same frame as an SVG document, one rect per horizontal run of one colour.
+export function svgSprite(type: string, mood: Mood, ms: number): string {
+  const grid = gridOf(type, mood, ms)
+  const rects: string[] = []
+  for (let y = 0; y < grid.h; y++) {
+    let x = 0
+    while (x < grid.w) {
+      const c = grid.px[y * grid.w + x]
+      if (c === undefined) {
+        x++
+        continue
+      }
+      let end = x + 1
+      while (end < grid.w && grid.px[y * grid.w + end] === c) end++
+      const hex = (c & 0xffffff).toString(16).padStart(6, '0')
+      rects.push(`<rect x="${x * SVG_SCALE}" y="${y * SVG_SCALE}" width="${(end - x) * SVG_SCALE}" height="${SVG_SCALE}" fill="#${hex}"/>`)
+      x = end
+    }
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${grid.w * SVG_SCALE}" height="${grid.h * SVG_SCALE}" viewBox="0 0 ${grid.w * SVG_SCALE} ${grid.h * SVG_SCALE}" shape-rendering="crispEdges">${rects.join('')}</svg>`
 }

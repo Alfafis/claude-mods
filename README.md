@@ -7,7 +7,7 @@ Marketplace pessoal de mods para o Claude Code. Cada recurso é um plugin indepe
 | Plugin | Versão | O que faz | Origem |
 |---|---|---|---|
 | `filetree` | 0.7.3 | Painel de árvore de arquivos: pastas sob demanda, busca, prévia paginada (diff ou conteúdo) ao clicar, nomes coloridos pelo estado no git, arquivos que o Claude lê e escreve, alerta de arquivo sensível, aviso de edição em `main` ou sobre mudança sua não commitada e, opcional, PR/CI/review do GitHub via `gh` | Próprio |
-| `crew` | 0.3.1 | Painel de subagents (`/crew`): um card por agent com caranguejo animado, papel, ferramenta atual, resposta, contexto, tempo e custo estimado (`~$`) | Próprio; arte do crab-band (MIT), ver aviso abaixo |
+| `crew` | 0.4.0 | Painel de subagents (`/crew`): um card por agent com caranguejo animado, papel, ferramenta atual, resposta, contexto, tempo e custo estimado (`~$`) | Próprio; arte do crab-band (MIT), ver aviso abaixo |
 | `meter` | 0.1.4 | Contexto e custo da conversa principal: painel `/meter` com a janela por categoria, o que cada turno acrescentou, custo por turno e limites; aviso único quando o contexto passa de `warnAt` | Próprio |
 | `recall` | 0.1.0 | Busca no texto das sessões passadas (`/recall <palavras>`): este projeto ou todos, com o id para `claude --resume` | Próprio |
 

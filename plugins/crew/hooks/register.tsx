@@ -3,7 +3,7 @@ import type { EngineInterface, Register, RenderChildren } from 'claude-code'
 
 import { UNSAFE, describeCall, fmtCost, meter, parsePrices, priceFor, resultLine, roleColor, roleLabel, shortModel, stepCost } from '../lib/describe'
 import type { Price, PriceTable } from '../lib/describe'
-import { COLUMNS, ROWS, sprite } from '../lib/sprites'
+import { COLUMNS, ROWS, SVG_HEIGHT, SVG_WIDTH, sprite, svgSprite } from '../lib/sprites'
 import { layout } from '../lib/tree'
 import type { Row } from '../lib/tree'
 import type { Card, Status } from '../types'
@@ -25,6 +25,9 @@ const spent = atom({ plugin: 'crew', key: 'spent' } as const, { sum: 0, partial:
 const cfg = { autoOpen: true, window: 200_000, maxCards: 30, compact: false, group: true, prices: {} as PriceTable, pricesBad: false }
 
 let ticking = false
+// set by the pane's render: only the terminal has Raster, so every other surface is redrawn whole
+let vector = false
+const VECTOR_MS = 500
 let opened = false
 
 const clean = (s: string) => s.replace(UNSAFE, '?')
@@ -200,6 +203,11 @@ async function pulse($: EngineInterface): Promise<void> {
         if ((await running()).length === 0) return
         ticking = true
       }
+      if (vector) {
+        await update($, tick, k => k + 1)
+        await $.clock.after(VECTOR_MS, () => void step())
+        return
+      }
       if (seen && whole) await update($, tick, k => k + 1)
       else {
         const now = await $.clock.now()
@@ -330,7 +338,8 @@ export const register: Register = (on, options) => {
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
-    const { Box, Text, Button, Raster } = $.ui.resolve(e)
+    const { Box, Text, Button } = $.ui.resolve(e)
+    vector = e.surface !== 'terminal'
     const all = await read($, roster)
     const beat = await read($, tick)
     const now = await $.clock.now()
@@ -357,6 +366,17 @@ export const register: Register = (on, options) => {
       </Button>
     )
 
+    // Raster is the terminal's alone, so every other surface gets the same frame as a vector
+    const mascot = (c: Card, art: ReturnType<typeof sprite>) => {
+      if (e.surface === 'terminal') {
+        const { Raster } = $.ui.resolve(e)
+        return <Raster key={`art:${c.id}`} columns={art.columns} rows={art.rows} cells={art.cells} />
+      }
+      const { Svg } = $.ui.resolve(e)
+      const mood = c.status === 'running' ? 'run' : c.status === 'done' ? 'done' : c.status
+      return <Svg key={`art:${c.id}`} source={svgSprite(c.type || 'agent', mood, now - c.startedAt)} alt={`${c.type || 'agent'} crab, ${c.status}`} width={SVG_WIDTH} height={SVG_HEIGHT} />
+    }
+
     const draw = ({ card: c, depth }: Row): RenderChildren => {
       const art = sprite(c.type || 'agent', c.status === 'running' ? 'run' : c.status === 'done' ? 'done' : c.status, now - c.startedAt)
       const { pct, cost, what, span } = facts(c)
@@ -365,7 +385,7 @@ export const register: Register = (on, options) => {
       const line = bar(Math.max(8, width - depth * 2), c.status, beat)
       return (
         <Box key={`card:${c.id}`} flexDirection="row" gap={1} paddingLeft={depth * 2}>
-          <Raster key={`art:${c.id}`} columns={art.columns} rows={art.rows} cells={art.cells} />
+          {mascot(c, art)}
           <Box flexDirection="column" justifyContent="center" height={ROWS}>
             {head(c, depth)}
             <Text color={c.status === 'running' ? 'suggestion' : undefined} dimColor={c.status !== 'running'} wrap="truncate-end">{what || ' '}</Text>

@@ -180,7 +180,7 @@ test('/meter opens the pane and fills it with the window by category, memory fil
   const res = await $.command.run({ command: 'meter', args: '' })
   expect(res.text).toContain('opened')
   expect(box.opened).toContain('meter')
-  for (const surface of ['terminal'] as const) {
+  for (const surface of ['terminal', 'desktop', 'vscode', 'mobile'] as const) {
     const ui = await $.ui.mount({ ...PANE, surface })
     expect(await ui.find({ type: 'Text', text: /Context 34%/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /68k of 200k/ })).toBeDefined()

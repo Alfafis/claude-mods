@@ -139,7 +139,7 @@ test('the pane draws the root without noise folders, with git codes, on every su
   await $.session.start({ cwd: ROOT, surface: 'terminal', isInteractive: true })
   await $.tool.call({ tool: 'Bash', command: 'true' })
 
-  for (const surface of ['terminal', 'desktop'] as const) {
+  for (const surface of ['terminal', 'desktop', 'vscode', 'mobile'] as const) {
     const ui = await $.ui.mount({ ...PANE, surface })
     expect((await ui.find({ type: 'Text', text: /⎇ main ↑1/ }))?.text).toBe('⎇ main ↑1')
     expect(await ui.find({ type: 'Button', key: `${ROOT}/src` })).toBeDefined()
@@ -161,7 +161,7 @@ test('a folder opens on press and its files appear', async ($, on) => {
   world(on, STATUS)
   await $.session.start({ cwd: ROOT, surface: 'terminal', isInteractive: true })
 
-  for (const surface of ['terminal', 'desktop'] as const) {
+  for (const surface of ['terminal', 'desktop', 'vscode', 'mobile'] as const) {
     const ui = await $.ui.mount({ ...PANE, surface })
     await ui.press({ key: `${ROOT}/src` })
     expect(await ui.find({ type: 'Text', text: /a\.ts/ })).toBeDefined()
@@ -218,7 +218,7 @@ test('reading a secret raises one toast, marks the row, and leaves the call unto
   }
   expect(toasts).toEqual(['Claude read a sensitive file: .env'])
 
-  for (const surface of ['terminal', 'desktop'] as const) {
+  for (const surface of ['terminal', 'desktop', 'vscode', 'mobile'] as const) {
     const ui = await $.ui.mount({ ...PANE, surface })
     const row = (await ui.findAll({ type: 'Text', text: /\.env\b/ })).find(n => n.props.color === 'error')
     expect(row).toBeDefined()
@@ -352,7 +352,7 @@ test('GitHub on: the pane shows the pull request, and refresh asks again', { opt
   const ran: string[][] = []
   world(on, STATUS, ran, { gh: PR_OPEN })
   await $.session.start({ cwd: ROOT, surface: 'terminal', isInteractive: true })
-  for (const surface of ['terminal', 'desktop'] as const) {
+  for (const surface of ['terminal', 'desktop', 'vscode', 'mobile'] as const) {
     const ui = await $.ui.mount({ ...PANE, surface })
     const line = await ui.find({ type: 'Text', text: /PR #12/ })
     expect(line?.text).toContain('open')
@@ -489,7 +489,7 @@ test('clicking a changed file shows its diff, coloured, and a second click close
   const ran: string[][] = []
   world(on, STATUS, ran, { diff: DIFF })
   await $.session.start({ cwd: ROOT, surface: 'terminal', isInteractive: true })
-  for (const surface of ['terminal', 'desktop'] as const) {
+  for (const surface of ['terminal', 'desktop', 'vscode', 'mobile'] as const) {
     const ui = await $.ui.mount({ ...PANE, surface })
     await ui.press({ key: `${ROOT}/src` })
     await ui.press({ key: `${ROOT}/src/a.ts` })
@@ -593,7 +593,7 @@ test('fileIcon colours by name and extension, with a plain fallback', () => {
 test('the header shows the root in capitals with search, refresh and collapse', async ($, on) => {
   world(on, STATUS)
   await $.session.start({ cwd: ROOT, surface: 'terminal', isInteractive: true })
-  for (const surface of ['terminal', 'desktop'] as const) {
+  for (const surface of ['terminal', 'desktop', 'vscode', 'mobile'] as const) {
     const ui = await $.ui.mount({ ...PANE, surface })
     expect(await ui.find({ type: 'Text', text: /^PROJ$/ })).toBeDefined()
     expect(await ui.find({ type: 'Input', key: 'search' })).toBeDefined()
