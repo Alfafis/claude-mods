@@ -1,0 +1,43 @@
+{
+  "name": "notify",
+  "version": "0.1.0",
+  "description": "A sound, a toast and a native notification when a long turn finishes or Claude waits for your approval",
+  "author": {
+    "name": "Alfafis"
+  },
+  "license": "MIT",
+  "userConfig": {
+    "minSeconds": {
+      "type": "number",
+      "title": "Only turns longer than (seconds)",
+      "description": "Alert when a turn of the main conversation ends after at least this long. 0 alerts on every turn. Interrupted turns never alert.",
+      "default": 30,
+      "min": 0,
+      "max": 3600
+    },
+    "onApproval": {
+      "type": "boolean",
+      "title": "Alert when Claude waits for approval",
+      "description": "Alert when a tool call is put to you for approval, so a prompt left open in another window does not stall the session.",
+      "default": true
+    },
+    "sound": {
+      "type": "boolean",
+      "title": "Play a sound",
+      "description": "Play a short sound. Plays through afplay, so macOS only; elsewhere it does nothing.",
+      "default": true
+    },
+    "toast": {
+      "type": "boolean",
+      "title": "Show a toast",
+      "description": "Show a toast in the session.",
+      "default": true
+    },
+    "native": {
+      "type": "boolean",
+      "title": "Send a native notification",
+      "description": "Raise a notification through your own notification channel, held for 10 seconds on surfaces that can hold it and dropped if you come back first. The terminal raises it at once.",
+      "default": true
+    }
+  }
+}
