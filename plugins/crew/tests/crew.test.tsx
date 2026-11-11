@@ -5,7 +5,7 @@ import { bar, ctxPercent, ended, fmtTime, fmtTokens, plural, stepped, trim } fro
 import { frame, poseAt, shrink } from '../lib/dance'
 import { UNSAFE, costOf, describeCall, fmtCost, hasTokens, meter, parsePrices, priceFor, redact, resultLine, roleColor, roleLabel, shortModel, stepCost } from '../lib/describe'
 import { layout } from '../lib/tree'
-import { COLUMNS, ROWS, costumeFor, sprite } from '../lib/sprites'
+import { COLUMNS, ROWS, costumeFor, sprite, svgSprite } from '../lib/sprites'
 import type { Card } from '../types'
 
 const PANE = {
@@ -142,11 +142,11 @@ test('the first subagent opens the pane once and its card shows up', async ($, o
   await $.agent.spawn({ prompt: 'x', description: 'Review the kit', subagentType: 'Explore' })
   await $.agent.spawn({ prompt: 'y', description: 'Again', subagentType: 'Explore' })
   expect(opened).toEqual(['crew'])
-  for (const surface of ['terminal'] as const) {
+  for (const surface of ['terminal', 'desktop', 'vscode', 'mobile'] as const) {
     const ui = await $.ui.mount({ ...PANE, surface })
     expect(await ui.find({ type: 'Text', text: /Running · 2/ })).toBeDefined()
     expect((await ui.find({ type: 'Button', key: 'view:a1' }))?.text).toContain('Review the kit')
-    expect(await ui.find({ type: 'Raster', key: 'art:a1' })).toBeDefined()
+    expect(await ui.find(surface === 'terminal' ? { type: 'Raster', key: 'art:a1' } : { type: 'Svg' })).toBeDefined()
     await ui.unmount()
   }
 })
@@ -758,4 +758,16 @@ test('a usage field that is missing or not a number counts as zero and never mak
   expect(hasTokens(bad)).toBe(false)
   expect(fmtCost(Number.NaN)).toBe('<$0.01')
   expect(stepCost({ input_tokens: undefined, output_tokens: Number.NaN }, { in: 10, out: 50 }).cost).toBe(0)
+})
+
+test('the vector crab is a valid SVG with the crab painted in, whatever the mood', () => {
+  for (const mood of ['run', 'done', 'failed', 'killed'] as const) {
+    const svg = svgSprite('Explore', mood, 400)
+    expect(svg.startsWith('<svg ')).toBe(true)
+    expect(svg.endsWith('</svg>')).toBe(true)
+    expect(svg).toContain('<rect ')
+    expect(svg).not.toMatch(/NaN|undefined/)
+    expect(svg.length).toBeLessThan(131072)
+  }
+  expect(svgSprite('Explore', 'run', 0)).not.toBe(svgSprite('Explore', 'run', 700))
 })

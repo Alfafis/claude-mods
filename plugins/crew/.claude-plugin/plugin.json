@@ -1,6 +1,6 @@
 {
   "name": "crew",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Subagent panel for Claude Code: one card per agent with a pixel-art mascot, model, effort, context and time",
   "types": "./types/index.d.ts",
   "author": {
