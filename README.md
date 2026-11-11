@@ -12,6 +12,7 @@ A marketplace of mods for Claude Code. Each feature is an independent plugin und
 | `crew` | 0.4.0 | Subagent panel (`/crew`): one card per agent with an animated crab, role, current tool, answer, context, time and estimated cost (`~$`) |
 | `meter` | 0.1.5 | Main conversation context and cost: `/meter` panel with the window by category, what each turn added, cost per turn and limits; a one-time warning when context passes `warnAt` |
 | `recall` | 0.1.0 | Search the text of past sessions (`/recall <words>`): this project or all, with the id for `claude --resume` |
+| `notify` | 0.1.0 | A sound, a toast and a native notification when a long turn finishes or Claude waits for your approval |
 
 Panels open as tabs beside the chat (`/filetree`, `/crew`, `/meter`, `/recall`). After `/reload-plugins` the tabs close and are reopened by their command.
 
@@ -62,12 +63,18 @@ The mods draw on the terminal and on the desktop app's Code tab; tests also run 
 | `meter` | `limits` | on | 5 h and 7 d windows in the line and the panel |
 | `meter` | `warnAt` | 80 | context % that triggers the warning (50 to 95) |
 | `recall` | `scope` | `project` | `project` or `all` (every folder in `~/.claude/projects`) |
+| `notify` | `minSeconds` | 30 | alert only for turns at least this long; 0 alerts on every turn; interrupted turns never alert |
+| `notify` | `onApproval` | on | alert when a tool call is put to you for approval |
+| `notify` | `sound` | on | short sound (macOS only: it plays through `afplay`) |
+| `notify` | `toast` | on | a toast in the session |
+| `notify` | `native` | on | native notification through your own channel, held 10 s and dropped if you come back first on surfaces that can hold it; the terminal raises it at once |
 
 ## What each one does not do
 
 - `crew`: cost is an estimate from the `prices` table and each step's `usage`, not the invoice. Cache writes with a 1 h TTL cost double and `usage` does not separate the TTL; price tiers by prompt size are not modeled.
 - `meter`: percentage and window are the compaction ones (what triggers autocompact), which can be smaller than the model window; the panel says so. Cost and limits come from the engine. Limits exist only on a subscription. A compaction shows as a `compacted` marker above the categories, not as a drop per category.
 - `recall`: reads local history only, on macOS and Linux. It uses the ripgrep bundled in the Claude Code binary (`ARGV0=rg`, an internal detail that may change) and `rg` from `PATH` as a fallback. Credentials are masked heuristically; the `all` scope shows text from other projects.
+- `notify`: the sound is macOS only. Alerts are throttled to one per kind every 4 s. The approval alert fires only when a person answers the ask (not a host or a hook), and its trigger is covered by unit tests of the decision, not by a test of the live permission dialog.
 - `filetree`: git always runs with `--no-optional-locks` and without fsmonitor, so it neither blocks Claude's commit nor runs code from a cloned repo's config.
 
 ## Notice about `crew`
