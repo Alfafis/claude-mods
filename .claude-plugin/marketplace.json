@@ -50,6 +50,17 @@
         "ref": "main",
         "sha": "fed047eac8938171c17bdea7b246ee6e8d7d0591"
       }
+    },
+    {
+      "name": "notify",
+      "description": "Sound, toast and native notification when a long turn ends or a tool call waits for your approval",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/Alfafis/claude-mods.git",
+        "path": "plugins/notify",
+        "ref": "main",
+        "sha": "93d5d941e86543cdc234aba165fccb271d37d798"
+      }
     }
   ]
 }
