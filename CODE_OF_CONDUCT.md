@@ -1,5 +1,5 @@
-# Código de conduta
+# Code of conduct
 
-Este projeto segue o [Contributor Covenant 2.1](https://www.contributor-covenant.org/pt-br/version/2/1/code_of_conduct/).
+This project follows the [Contributor Covenant 2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/).
 
-Resumo: seja respeitoso, critique o código e não a pessoa, e não faça assédio ou discriminação de qualquer tipo. Comportamento inaceitável pode ser reportado em privado ao mantenedor pelo Private Vulnerability Reporting do GitHub ou pelo contato no perfil do dono do repositório. O mantenedor pode remover comentários, fechar issues e PRs e bloquear quem violar estas regras.
+In short: be respectful, criticize the code and not the person, and no harassment or discrimination of any kind. Unacceptable behavior can be reported privately to the maintainer through GitHub Private Vulnerability Reporting or the contact on the repository owner's profile. The maintainer may remove comments, close issues and PRs and block anyone who breaks these rules.

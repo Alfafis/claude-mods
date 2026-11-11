@@ -1,17 +1,17 @@
-name: Ideia ou recurso
-description: Proponha uma mudança ou um novo mod
+name: Idea or feature
+description: Propose a change or a new mod
 labels: [enhancement]
 body:
   - type: textarea
     id: problem
     attributes:
-      label: Problema que isso resolve
+      label: Problem this solves
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
-      label: Proposta
-      description: Se precisar de rede, processo externo ou acesso fora do projeto, diga aqui.
+      label: Proposal
+      description: If it needs the network, an external process or access outside the project, say so here.
     validations:
       required: true

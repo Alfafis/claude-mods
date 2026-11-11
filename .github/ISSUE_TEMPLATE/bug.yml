@@ -1,5 +1,5 @@
 name: Bug
-description: Algo não funciona como esperado
+description: Something does not work as expected
 labels: [bug]
 body:
   - type: dropdown
@@ -9,18 +9,25 @@ body:
       options: [filetree, crew, meter, recall, marketplace]
     validations:
       required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where it runs
+      options: [Terminal, Desktop app (Code tab), VS Code, Other]
+    validations:
+      required: true
   - type: input
     id: versions
     attributes:
-      label: Versão do plugin e do Claude Code
+      label: Plugin and Claude Code versions
     validations:
       required: true
   - type: textarea
     id: repro
     attributes:
-      label: Passos para reproduzir e o que esperava
+      label: Steps to reproduce and what you expected
     validations:
       required: true
   - type: markdown
     attributes:
-      value: Não cole credenciais nem texto de sessões. Vulnerabilidades vão pelo Private Vulnerability Reporting (SECURITY.md).
+      value: Do not paste credentials or session text. Vulnerabilities go through Private Vulnerability Reporting (SECURITY.md).

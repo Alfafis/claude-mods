@@ -23,6 +23,16 @@ jobs:
             python3 -m json.tool "$f" > /dev/null || { echo "JSON inválido: $f"; exit 1; }
           done
 
+      - name: Marketplace pinned to commits
+        run: |
+          python3 - <<'PY'
+          import json, re, sys
+          bad = [p["name"] for p in json.load(open(".claude-plugin/marketplace.json"))["plugins"]
+                 if not (isinstance(p["source"], dict) and re.fullmatch(r"[0-9a-f]{40}", p["source"].get("sha", "")))]
+          if bad:
+              print("plugins without a pinned sha:", ", ".join(bad)); sys.exit(1)
+          PY
+
       - name: Segredos no diff
         run: |
           base="${{ github.event.pull_request.base.sha || github.event.before }}"

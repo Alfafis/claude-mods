@@ -1,17 +1,18 @@
-## O que muda
+## What changes
 
-<!-- Plugin afetado e resumo. Um plugin por PR. -->
+<!-- Affected plugin and a summary. One plugin per PR. -->
 
-## Checklist de segurança
+## Security checklist
 
-- [ ] Acessa rede? (se sim, explique e referencie a issue aprovada)
-- [ ] Executa processos? (comando, argumentos, de onde vêm)
-- [ ] Lê ou escreve fora do projeto ou de `~/.claude`?
-- [ ] Adiciona dependência ou código de terceiros?
-- [ ] Nenhuma credencial, caminho pessoal ou dado de sessão no diff nem em screenshots
+- [ ] Uses the network? (if so, explain and link the approved issue)
+- [ ] Runs processes? (command, arguments, where they come from)
+- [ ] Reads or writes outside the project or `~/.claude`?
+- [ ] Adds a dependency or third-party code?
+- [ ] No credentials, personal paths or session data in the diff or screenshots
 
-## Validação
+## Validation
 
-- [ ] `claude plugin validate plugins/<nome>`
-- [ ] `claude plugin test plugins/<nome>`
-- [ ] Testei o mod rodando localmente
+- [ ] `claude plugin validate plugins/<name>`
+- [ ] `claude plugin test plugins/<name>`
+- [ ] Tested every surface the pane draws on (`terminal`, `desktop`, `vscode`, `mobile`)
+- [ ] Ran the mod locally
