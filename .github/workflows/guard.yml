@@ -17,10 +17,10 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: JSON válido
+      - name: Valid JSON
         run: |
           for f in .claude-plugin/marketplace.json plugins/*/.claude-plugin/plugin.json plugins/*/hooks/hooks.json; do
-            python3 -m json.tool "$f" > /dev/null || { echo "JSON inválido: $f"; exit 1; }
+            python3 -m json.tool "$f" > /dev/null || { echo "Invalid JSON: $f"; exit 1; }
           done
 
       - name: Marketplace pinned to commits
@@ -33,18 +33,18 @@ jobs:
               print("plugins without a pinned sha:", ", ".join(bad)); sys.exit(1)
           PY
 
-      - name: Segredos no diff
+      - name: Secrets in the diff
         run: |
           base="${{ github.event.pull_request.base.sha || github.event.before }}"
           range="HEAD"; [ -n "$base" ] && [ "$base" != "0000000000000000000000000000000000000000" ] && range="$base..HEAD"
           if git log -p --format= "$range" | grep -E '^\+' | grep -E -- '(AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|-----BEGIN [A-Z ]*PRIVATE KEY-----)'; then
-            echo "Possível segredo no diff"; exit 1
+            echo "Possible secret in the diff"; exit 1
           fi
 
-      - name: Superfície sensível (aviso, exige revisão manual)
+      - name: Sensitive surface (warning, needs manual review)
         run: |
           base="${{ github.event.pull_request.base.sha || github.event.before }}"
           [ -z "$base" ] && exit 0
           git diff "$base"..HEAD -- plugins .claude-plugin .github \
             | grep -E '^\+' | grep -n -E -- '(fetch\(|XMLHttpRequest|WebSocket|https?://|\$\.process|child_process|spawn\(|exec\(|eval\(|new Function|\.github/workflows|marketplace\.json)' \
-            && echo "::warning::O PR toca rede, processo, eval, workflow ou marketplace: revisar linha a linha." || true
+            && echo "::warning::The PR touches network, process, eval, workflow or marketplace: review line by line." || true
