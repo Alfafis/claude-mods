@@ -55,6 +55,24 @@ export function growth(prev: Record<string, number>, cats: Cat[]): Record<string
   return out
 }
 
+// The window shrinks only when the conversation is compacted (or cleared). A drop of this much in the
+// tokens the used categories hold between two turns is far more than a turn ever frees.
+const COMPACT_MIN = 5000
+const COMPACT_SHARE = 0.2
+
+export function compacted(prev: Record<string, number>, cats: Cat[]): boolean {
+  if (Object.keys(prev).length === 0) return false
+  let was = 0
+  let now = 0
+  for (const c of cats) {
+    if (c.kind !== 'used') continue
+    was += prev[c.name] ?? 0
+    now += c.tokens
+  }
+  const drop = was - now
+  return drop >= COMPACT_MIN && drop >= was * COMPACT_SHARE
+}
+
 export const snapshot = (cats: Cat[]): Record<string, number> => Object.fromEntries(cats.map(c => [c.name, c.tokens]))
 
 // "2h 10m", "35m", "now": how long until a window resets.

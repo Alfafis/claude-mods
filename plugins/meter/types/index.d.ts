@@ -28,6 +28,8 @@ export type Crumbs = {
   files: { path: string; type: string; tokens: number }[]
   // tokens each category gained over the last turn
   delta: Record<string, number>
+  // the window shrank over the last turn: the conversation was compacted
+  compacted?: boolean
 }
 
 declare module 'claude-code' {

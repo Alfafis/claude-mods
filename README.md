@@ -10,7 +10,7 @@ A marketplace of mods for Claude Code. Each feature is an independent plugin und
 |---|---|---|
 | `filetree` | 0.7.3 | File tree panel: folders on demand, search, paged preview (diff or content) on click, names colored by git state, files Claude reads and writes, sensitive-file alert, warning when editing on `main` or over your uncommitted changes, and optional GitHub PR/CI/review through `gh` |
 | `crew` | 0.4.0 | Subagent panel (`/crew`): one card per agent with an animated crab, role, current tool, answer, context, time and estimated cost (`~$`) |
-| `meter` | 0.1.4 | Main conversation context and cost: `/meter` panel with the window by category, what each turn added, cost per turn and limits; a one-time warning when context passes `warnAt` |
+| `meter` | 0.1.5 | Main conversation context and cost: `/meter` panel with the window by category, what each turn added, cost per turn and limits; a one-time warning when context passes `warnAt` |
 | `recall` | 0.1.0 | Search the text of past sessions (`/recall <words>`): this project or all, with the id for `claude --resume` |
 
 Panels open as tabs beside the chat (`/filetree`, `/crew`, `/meter`, `/recall`). After `/reload-plugins` the tabs close and are reopened by their command.
@@ -66,7 +66,7 @@ The mods draw on the terminal and on the desktop app's Code tab; tests also run 
 ## What each one does not do
 
 - `crew`: cost is an estimate from the `prices` table and each step's `usage`, not the invoice. Cache writes with a 1 h TTL cost double and `usage` does not separate the TTL; price tiers by prompt size are not modeled.
-- `meter`: percentage and window are the compaction ones (what triggers autocompact), which can be smaller than the model window; the panel says so. Cost and limits come from the engine. Limits exist only on a subscription. Compaction does not show as a drop per category.
+- `meter`: percentage and window are the compaction ones (what triggers autocompact), which can be smaller than the model window; the panel says so. Cost and limits come from the engine. Limits exist only on a subscription. A compaction shows as a `compacted` marker above the categories, not as a drop per category.
 - `recall`: reads local history only, on macOS and Linux. It uses the ripgrep bundled in the Claude Code binary (`ARGV0=rg`, an internal detail that may change) and `rg` from `PATH` as a fallback. Credentials are masked heuristically; the `all` scope shows text from other projects.
 - `filetree`: git always runs with `--no-optional-locks` and without fsmonitor, so it neither blocks Claude's commit nor runs code from a cloned repo's config.
 

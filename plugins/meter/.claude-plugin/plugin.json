@@ -1,6 +1,6 @@
 {
   "name": "meter",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Context and cost of the main session: a line above the prompt, and a /meter pane with the window by category and what each turn added",
   "types": "./types/index.d.ts",
   "author": {

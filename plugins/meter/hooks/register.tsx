@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register } from 'claude-code'
 
-import { base, crossing, fmtTok, fmtUsd, gauge, growth, label, resetsIn, snapshot, spark, tone, windowName } from '../lib/format'
+import { base, compacted, crossing, fmtTok, fmtUsd, gauge, growth, label, resetsIn, snapshot, spark, tone, windowName } from '../lib/format'
 import type { Cat, Crumbs, Limit, Reading, Turn } from '../types'
 
 const PANE = 'meter'
@@ -74,7 +74,9 @@ async function take($: EngineInterface, ended = false): Promise<Reading | undefi
     const cats: Cat[] = b.categories.map(c => ({ name: label(c.name, 24), tokens: Math.max(0, num(c.tokens) ?? 0), kind: c.kind }))
     // (a category row the engine sends without a name or a token count is still one row)
     const before = await read($, snap)
-    const delta = ended || Object.keys(before).length === 0 ? growth(before, cats) : ((await read($, crumbs))?.delta ?? {})
+    const fresh = ended || Object.keys(before).length === 0
+    const delta = fresh ? growth(before, cats) : ((await read($, crumbs))?.delta ?? {})
+    const shrank = fresh ? compacted(before, cats) : ((await read($, crumbs))?.compacted ?? false)
     await update($, crumbs, () => ({
       cats,
       total: num(b.totalTokens) ?? 0,
@@ -82,6 +84,7 @@ async function take($: EngineInterface, ended = false): Promise<Reading | undefi
       model: label(String(b.model ?? ''), 32),
       files: [...(Array.isArray(b.memoryFiles) ? b.memoryFiles : [])].sort((x, y) => y.tokens - x.tokens).slice(0, 5).map(f => ({ path: label(f.path, 80), type: label(f.type, 12), tokens: f.tokens })),
       delta,
+      compacted: shrank,
     }))
     if (ended || Object.keys(before).length === 0) await update($, snap, () => snapshot(cats))
   }
@@ -226,6 +229,7 @@ export const register: Register = (on, options) => {
         {used.length > 0 ? (
           <Box flexDirection="column">
             <Text bold>By category <Text dimColor>(+ = grew over the last turn)</Text></Text>
+            {b?.compacted ? <Text color="suggestion">compacted: the window shrank over the last turn</Text> : undefined}
             {used.map(c => row(c, false))}
             {rest.map(c => row(c, true))}
           </Box>
