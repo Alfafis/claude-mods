@@ -1,6 +1,6 @@
 {
   "name": "crew",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Subagent panel for Claude Code: one card per agent with a pixel-art mascot, model, effort, context and time",
   "types": "./types/index.d.ts",
   "author": {
@@ -13,6 +13,20 @@
       "title": "Open on first subagent",
       "description": "Open the Crew pane the first time a subagent starts in a session. /crew opens and closes it by hand either way.",
       "default": true
+    },
+    "autoClose": {
+      "type": "boolean",
+      "title": "Close when the subagents end",
+      "description": "Close the pane a few seconds after the last running subagent ends, and open it again at the next one. A pane opened with /crew stays until /crew close. Off: the pane stays open once it opens.",
+      "default": false
+    },
+    "autoCloseSeconds": {
+      "type": "number",
+      "title": "Wait before closing (seconds)",
+      "description": "How long after the last subagent ends before autoClose closes the pane, so one that starts right after keeps it.",
+      "default": 8,
+      "min": 2,
+      "max": 300
     },
     "contextWindow": {
       "type": "number",
