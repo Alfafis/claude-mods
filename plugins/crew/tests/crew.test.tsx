@@ -16,6 +16,7 @@ const PANE = {
 } as const
 
 const blits: string[] = []
+const closed: string[] = []
 let refuseBlits = false
 
 function world(on: On, opened: string[] = [], prefix = 'a', listing: () => unknown[] | undefined = () => undefined) {
@@ -26,7 +27,10 @@ function world(on: On, opened: string[] = [], prefix = 'a', listing: () => unkno
     opened.push(e.id)
     return { value: { isPlaced: true } }
   })
-  on('ui.close', () => ({ value: {} }))
+  on('ui.close', (_$, e) => {
+    closed.push(e.id)
+    return { value: {} }
+  })
   on('turn.complete', () => ({ text: '' }))
   on('tool.call', () => ({ result: {} }))
   on('ui.blit', (_$, e) => {
@@ -770,4 +774,78 @@ test('the vector crab is a valid SVG with the crab painted in, whatever the mood
     expect(svg.length).toBeLessThan(131072)
   }
   expect(svgSprite('Explore', 'run', 0)).not.toBe(svgSprite('Explore', 'run', 700))
+})
+
+const finish = ($: { turn: { complete: (e: never) => Promise<unknown> } }, id: string) =>
+  $.turn.complete({ turnId: `t-${id}`, answer: 'ok', durationMs: 1, isAborted: false, agentId: id, reason: 'answer' } as never)
+
+test('autoClose closes the pane a wait after the last subagent ends, and a new one reopens it', { options: { autoClose: true, autoCloseSeconds: 5 } }, async ($, on) => {
+  closed.length = 0
+  const opened: string[] = []
+  const clock = world(on, opened)
+  await $.session.start({ cwd: '/p', surface: 'terminal', isInteractive: true })
+  const base = closed.length
+  await $.agent.spawn({ prompt: 'x', description: 'One', subagentType: 'Plan' })
+  expect(opened).toEqual(['crew'])
+  await clock.advance(2000)
+  expect(closed.length - base).toBe(0)
+
+  await finish($, 'a1')
+  await clock.advance(1000)
+  await clock.advance(3000)
+  expect(closed.length - base).toBe(0)
+  await clock.advance(2000)
+  expect(closed.length - base).toBe(1)
+
+  await $.agent.spawn({ prompt: 'y', description: 'Two', subagentType: 'Plan' })
+  expect(opened).toEqual(['crew', 'crew'])
+})
+
+test('a subagent that starts inside the wait keeps the pane open', { options: { autoClose: true, autoCloseSeconds: 5 } }, async ($, on) => {
+  closed.length = 0
+  const clock = world(on)
+  await $.session.start({ cwd: '/p', surface: 'terminal', isInteractive: true })
+  const base = closed.length
+  await $.agent.spawn({ prompt: 'x', description: 'One', subagentType: 'Plan' })
+  await finish($, 'a1')
+  await clock.advance(1000)
+  await clock.advance(2000)
+  await $.agent.spawn({ prompt: 'y', description: 'Two', subagentType: 'Plan' })
+  await clock.advance(10_000)
+  expect(closed.length - base).toBe(0)
+  await finish($, 'a2')
+  await clock.advance(1000)
+  await clock.advance(6000)
+  expect(closed.length - base).toBe(1)
+})
+
+test('a pane opened with /crew is not closed by autoClose', { options: { autoClose: true, autoCloseSeconds: 5 } }, async ($, on) => {
+  closed.length = 0
+  const clock = world(on)
+  await $.session.start({ cwd: '/p', surface: 'terminal', isInteractive: true })
+  const before = closed.length
+  await $.command.run({ command: 'crew', args: '' })
+  await $.agent.spawn({ prompt: 'x', description: 'One', subagentType: 'Plan' })
+  await finish($, 'a1')
+  await clock.advance(1000)
+  await clock.advance(20_000)
+  expect(closed.length).toBe(before)
+})
+
+test('autoClose is off by default: the pane stays open after the subagents end', async ($, on) => {
+  closed.length = 0
+  const clock = world(on)
+  await $.session.start({ cwd: '/p', surface: 'terminal', isInteractive: true })
+  await $.agent.spawn({ prompt: 'x', description: 'One', subagentType: 'Plan' })
+  await finish($, 'a1')
+  await clock.advance(1000)
+  await clock.advance(30_000)
+  expect(closed).toEqual([])
+})
+
+test('a session start with autoClose closes a leftover pane when nothing runs', { options: { autoClose: true } }, async ($, on) => {
+  closed.length = 0
+  world(on)
+  await $.session.start({ cwd: '/p', surface: 'terminal', isInteractive: true })
+  expect(closed).toEqual(['crew'])
 })

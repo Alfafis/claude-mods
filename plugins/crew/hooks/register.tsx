@@ -22,13 +22,16 @@ const loopId = atom({ plugin: 'crew', key: 'loopId' } as const, 0, { shape: 'loo
 // roster (maxCards, clear) takes nothing from it.
 const spent = atom({ plugin: 'crew', key: 'spent' } as const, { sum: 0, partial: false, any: false }, { shape: 'spent-1' })
 
-const cfg = { autoOpen: true, window: 200_000, maxCards: 30, compact: false, group: true, prices: {} as PriceTable, pricesBad: false }
+const cfg = { autoOpen: true, autoClose: false, closeAfter: 8, window: 200_000, maxCards: 30, compact: false, group: true, prices: {} as PriceTable, pricesBad: false }
 
 let ticking = false
 // set by the pane's render: only the terminal has Raster, so every other surface is redrawn whole
 let vector = false
 const VECTOR_MS = 500
 let opened = false
+// the pane was opened with /crew: autoClose leaves such a pane to the person
+let byHand = false
+let closing: { cancel: () => void } | undefined
 
 const clean = (s: string) => s.replace(UNSAFE, '?')
 
@@ -200,7 +203,10 @@ async function pulse($: EngineInterface): Promise<void> {
       if (live.length === 0) {
         ticking = false
         // a spawn that landed in this gap started no loop of its own: look once more
-        if ((await running()).length === 0) return
+        if ((await running()).length === 0) {
+          await scheduleClose($).catch(() => undefined)
+          return
+        }
         ticking = true
       }
       if (vector) {
@@ -232,6 +238,23 @@ async function pulse($: EngineInterface): Promise<void> {
   await step()
 }
 
+const runningCards = async ($: EngineInterface) => Object.values(await read($, roster)).filter(c => c.status === 'running')
+
+async function closeIfIdle($: EngineInterface): Promise<void> {
+  closing = undefined
+  if ((await runningCards($)).length > 0) return
+  opened = false
+  await $.ui.close({ id: PANE }).catch(() => undefined)
+}
+
+// autoClose: a pane the first subagent opened goes when the last one ends, after a short wait so
+// one that starts right behind keeps it. A pane opened with /crew stays until /crew close.
+async function scheduleClose($: EngineInterface): Promise<void> {
+  if (!cfg.autoClose || !opened || byHand) return
+  closing?.cancel()
+  closing = await $.clock.after(cfg.closeAfter * 1000, () => void closeIfIdle($))
+}
+
 async function open($: EngineInterface): Promise<void> {
   opened = true
   await $.ui.open({ id: PANE, title: 'Crew' })
@@ -246,6 +269,8 @@ const dropFinished = (all: Record<string, Card>) => {
 
 export const register: Register = (on, options) => {
   cfg.autoOpen = options.autoOpen !== false
+  cfg.autoClose = options.autoClose === true
+  cfg.closeAfter = Math.min(300, Math.max(2, Number(options.autoCloseSeconds) || 8))
   cfg.window = Math.max(8000, Number(options.contextWindow) || 200_000)
   cfg.maxCards = Math.min(200, Math.max(5, Math.floor(Number(options.maxCards)) || 30))
   cfg.compact = options.compactFinished === true
@@ -256,12 +281,15 @@ export const register: Register = (on, options) => {
 
   on('session.start', async ($, e, next) => {
     await $.command.register({ name: 'crew', description: 'Show the subagent pane; /crew close hides it, /crew clear drops the finished cards' })
+    // a pane left open by an earlier load or a resumed session, with nothing running to show
+    if (cfg.autoClose && (await runningCards($)).length === 0) await $.ui.close({ id: PANE }).catch(() => undefined)
     return next(e)
   })
 
   on('command.run', { command: 'crew' }, async ($, e) => {
     const arg = e.args.trim()
     if (arg === 'close') {
+      byHand = false
       await $.ui.close({ id: PANE })
       return { text: 'Crew closed.' }
     }
@@ -269,6 +297,7 @@ export const register: Register = (on, options) => {
       await update($, roster, dropFinished)
       return { text: 'Finished cards cleared.' }
     }
+    byHand = true
     await open($)
     return { text: 'Crew opened.' }
   })
@@ -281,6 +310,8 @@ export const register: Register = (on, options) => {
         const id = res.agentId
         const now = await $.clock.now()
         await patch($, id, c => ({ ...c, title: clean(e.description), type: clean(e.subagentType), model: clean(res.model ?? ''), status: 'running', startedAt: now, parentId: e.parentAgentId ?? c.parentId }))
+        closing?.cancel()
+        closing = undefined
         if (cfg.autoOpen && !opened) await open($)
         void pulse($)
       }
